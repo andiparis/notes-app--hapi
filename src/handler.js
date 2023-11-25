@@ -1,6 +1,36 @@
 const { nanoid } = require('nanoid');
 const notes = require('./notes');
 
+const getAllNotesHandler = () => ({
+  status: 'success',
+  data: {
+    notes,
+  },
+});
+
+const getNoteByIdHandler = (request, h) => {
+  const { id } = request.params;
+
+  const note = notes.filter((note) => note.id === id)[0];
+
+  if (note !== undefined) {
+    return {
+      status: 'success',
+      data: {
+        note,
+      },
+    };
+  } else {
+    const response = h.response({
+      status: 'fail',
+      message: 'Catatan tidak ditemukan',
+    });
+    response.code(404);
+
+    return response;
+  }
+};
+
 const addNoteHandler = (request, h) => {
   const { title, tags, body } = request.payload;
   const id = nanoid(16);
@@ -34,4 +64,4 @@ const addNoteHandler = (request, h) => {
   }
 };
 
-module.exports = { addNoteHandler };
+module.exports = { getAllNotesHandler, getNoteByIdHandler, addNoteHandler };
